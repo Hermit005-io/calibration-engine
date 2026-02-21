@@ -10,13 +10,15 @@ A forecaster is well-calibrated if, among all predictions made with X% confidenc
 
 ## Key Findings
 
-**1. Metaculus is genuinely skilled.** With a Brier Score of 0.1717 vs 0.25 for a random forecaster, and a Skill Score of 0.2433, the crowd meaningfully beats naive baselines.
+**1. Metaculus is exceptionally well-calibrated.** With a Brier Score of 0.1178 (vs 0.25 for random) and a Skill Score of 0.4759, the crowd is nearly twice as good as a naive baseline across 4,851 resolved questions.
 
-**2. More forecasters = more accurate but less calibrated.** Questions with above-median forecaster counts have a 37% lower Brier Score but 2x higher ECE. Larger crowds converge on correct answers but become systematically overconfident. This effect is statistically significant (p < 0.0001).
+**2. More forecasters improves both accuracy and calibration.** Questions with above-median forecaster counts have a 31% lower Brier Score and lower ECE. Wisdom of crowds works — this effect is statistically significant (p < 0.0001).
 
-**3. Extreme predictions are well-grounded.** Questions predicted below 10% resolved No 100% of the time. Questions above 90% resolved Yes 100% of the time.
+**3. Geopolitics is best calibrated, Natural Sciences worst.** ECE ranges from 0.022 (Geopolitics) to 0.160 (Natural Sciences) across 15 categories, suggesting the crowd has stronger intuitions for political outcomes than scientific ones.
 
-**4. Recent questions show improving accuracy.** 2026 questions have a Brier Score of 0.119 vs 0.215 for 2025, mirroring the forecaster count effect.
+**4. Extreme predictions are remarkably accurate.** Among 1,302 questions predicted below 10%, only 1.15% resolved Yes. Among 435 questions above 90%, 98.39% resolved Yes.
+
+**5. Calibration has improved over time.** ECE peaked around 0.144 in 2019 and trended down to 0.034 by 2023-2025.
 
 ## Metrics Implemented
 
