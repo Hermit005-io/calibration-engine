@@ -44,9 +44,17 @@ def fetch_resolved_binary_questions(max_questions=2000):
             
             # Get community prediction from aggregations
             try:
-                centers = question["aggregations"]["unweighted"]["latest"]["centers"]
-                prediction = centers[0] if centers else None
-            except (KeyError, TypeError, IndexError):
+                aggs = question.get("aggregations", {})
+                prediction = None
+                for key in ["unweighted", "recency_weighted", "single_aggregation"]:
+                    try:
+                        centers = aggs[key]["latest"]["centers"]
+                        if centers:
+                            prediction = centers[0]
+                            break
+                    except (KeyError, TypeError, IndexError):
+                        continue
+            except Exception:
                 prediction = None
 
             # Get category
@@ -85,7 +93,7 @@ def save_raw_data(questions):
 
 
 if __name__ == "__main__":
-    questions = fetch_resolved_binary_questions(max_questions=2000)
+    questions = fetch_resolved_binary_questions(max_questions=10000)
     df = save_raw_data(questions)
     print(df.head())
     print(f"\nTotal questions fetched: {len(df)}")
