@@ -180,21 +180,29 @@ elif page == "Findings":
     st.title("Key Findings")
 
     st.markdown("""
-    ## 1. Metaculus is well-calibrated overall
-    With a Brier Score of **0.1717** (vs 0.25 for random) and an ECE of **0.0616**, 
-    the Metaculus community produces forecasts that meaningfully track reality.
+    ## 1. Metaculus is exceptionally well-calibrated
+    With a Brier Score of **0.1178** (vs 0.25 for random) and a Skill Score of **0.4759**, 
+    the Metaculus community is nearly twice as good as a naive baseline. ECE of 0.0489 
+    means predictions are on average less than 5 percentage points off from true frequencies.
 
-    ## 2. More forecasters = more accurate but less calibrated
-    Questions with above-median forecaster counts have a **37% lower Brier Score** 
-    but **2x higher ECE**. Larger crowds converge on the right answer but become 
-    systematically overconfident in doing so. This effect is highly statistically 
-    significant (p < 0.0001).
+    ## 2. More forecasters improves both accuracy AND calibration
+    Questions with above-median forecaster counts have a **31% lower Brier Score** 
+    (0.0961 vs 0.1394) and **lower ECE** (0.0400 vs 0.0577). Wisdom of crowds works — 
+    more participation genuinely improves forecast quality across every dimension.
+    This effect is highly statistically significant (p < 0.0001, n=4,851).
 
-    ## 3. Extreme predictions are well-grounded
-    Questions predicted below 10% resolved No 100% of the time. Questions above 90% 
-    resolved Yes 100% of the time. The crowd avoids the trap of false certainty at the tails.
+    ## 3. Geopolitics is best calibrated, Natural Sciences worst
+    Geopolitics questions have an ECE of just 0.022 — nearly perfect calibration.
+    Natural Sciences questions have an ECE of 0.160 — the worst of any category.
+    This suggests the crowd has well-developed intuitions for political outcomes 
+    but struggles with scientific predictions.
 
-    ## 4. Recent questions are more accurate but less calibrated
-    2026 questions show a Brier Score of 0.119 vs 0.215 for 2025, but ECE of 0.106 vs 0.035. 
-    This mirrors finding #2 — recent questions attract more forecasters.
+    ## 4. Extreme predictions are remarkably accurate
+    Among 1,302 questions predicted below 10%: only 1.15% resolved Yes.
+    Among 435 questions predicted above 90%: 98.39% resolved Yes.
+    The crowd avoids false certainty at the tails with striking consistency.
+
+    ## 5. Calibration has improved over time
+    ECE peaked around 0.144 in 2019 and has trended down to 0.034 by 2023-2025,
+    suggesting the Metaculus community has matured as a forecasting platform.
     """)
