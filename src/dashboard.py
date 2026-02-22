@@ -11,6 +11,33 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown("""
+<style>
+    /* Main background */
+    .stApp { background-color: #0f1117; color: #ffffff; }
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] { background-color: #1a1d27; }
+    
+    /* Metric cards */
+    [data-testid="stMetric"] {
+        background-color: #1a1d27;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        padding: 16px;
+    }
+    
+    /* Headers */
+    h1 { color: #7c9ef5 !important; }
+    h2 { color: #a0b4f7 !important; }
+    
+    /* Dataframes */
+    [data-testid="stDataFrame"] { border-radius: 8px; }
+    
+    /* Subtle divider */
+    hr { border-color: #2d3748; }
+</style>
+""", unsafe_allow_html=True)
 @st.cache_data
 def load_data():
     df = pd.read_csv("data/processed/questions_clean.csv")
