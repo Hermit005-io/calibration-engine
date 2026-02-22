@@ -131,11 +131,54 @@ def analysis_resolution_rate_over_time(df):
     results_df = pd.DataFrame(results)
     print(results_df.to_string(index=False))
     return results_df
+def analysis_forecaster_confounds(df):
+    """
+    Q5: Is the forecaster count effect real, or a confound?
+    We control for question age and resolution rate to isolate the effect.
+    """
+    print("\n" + "=" * 50)
+    print("Q5: CONTROLLING FOR CONFOUNDS IN FORECASTER EFFECT")
+    print("=" * 50)
 
+    df = df.dropna(subset=["number_of_forecasters", "resolve_time"]).copy()
+    df["resolve_time"] = pd.to_datetime(df["resolve_time"], errors="coerce")
+    df["question_age_days"] = (df["resolve_time"] - df["created_time"].apply(pd.Timestamp)).dt.days.abs()
+    df["brier"] = (df["community_prediction"] - df["resolution"]) ** 2
+
+    # Bin forecaster count into quartiles
+    df["forecaster_quartile"] = pd.qcut(df["number_of_forecasters"], q=4, labels=["Q1", "Q2", "Q3", "Q4"])
+
+    # Bin question age into quartiles
+    df["age_quartile"] = pd.qcut(df["question_age_days"], q=4, labels=["young", "mid-young", "mid-old", "old"])
+
+    # For each age group, check if forecaster count still predicts calibration
+    print("\nBrier Score by forecaster quartile, controlling for question age:")
+    print(f"{'Age Group':<12} {'Q1 (few)':<12} {'Q2':<12} {'Q3':<12} {'Q4 (many)':<12}")
+    print("-" * 52)
+
+    for age in ["young", "mid-young", "mid-old", "old"]:
+        age_df = df[df["age_quartile"] == age]
+        row = f"{age:<12}"
+        for q in ["Q1", "Q2", "Q3", "Q4"]:
+            subset = age_df[age_df["forecaster_quartile"] == q]
+            if len(subset) > 5:
+                row += f"{subset['brier'].mean():<12.4f}"
+            else:
+                row += f"{'N/A':<12}"
+        print(row)
+
+    # Overall correlation
+    corr = df["number_of_forecasters"].corr(df["brier"])
+    print(f"\nOverall correlation (forecasters vs Brier): {corr:.4f}")
+    print("(Negative = more forecasters → lower Brier Score → more accurate)")
+
+    return df
 if __name__ == "__main__":
     df = pd.read_csv("data/processed/questions_clean.csv")
+    df["created_time"] = pd.to_datetime(df["created_time"], errors="coerce")
 
     cat_results = analysis_by_category(df)
     forecaster_results = analysis_forecaster_count(df)
     extreme_results = analysis_extreme_probabilities(df)
     time_results = analysis_resolution_rate_over_time(df)
+    confound_results = analysis_forecaster_confounds(df)
