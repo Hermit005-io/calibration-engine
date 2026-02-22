@@ -173,6 +173,92 @@ def analysis_forecaster_confounds(df):
     print("(Negative = more forecasters → lower Brier Score → more accurate)")
 
     return df
+def analysis_time_horizon(df):
+    """
+    Q6: Does calibration improve as resolution date approaches?
+    We use the aggregation history to measure calibration at different time horizons.
+    """
+    import requests
+    import time as time_module
+
+    print("\n" + "=" * 50)
+    print("Q6: CALIBRATION OVER TIME HORIZON")
+    print("=" * 50)
+
+    # Sample 200 questions to keep API calls manageable
+    sample = df.dropna(subset=["resolve_time"]).sample(200, random_state=42)
+    sample["resolve_time"] = pd.to_datetime(sample["resolve_time"], errors="coerce")
+
+    horizons = {30: [], 7: [], 1: []}
+
+    print("Fetching prediction histories (this may take a few minutes)...")
+
+    for i, (_, row) in enumerate(sample.iterrows()):
+        try:
+            r = requests.get(
+                f"https://www.metaculus.com/api2/questions/{row['id']}/",
+                timeout=10
+            )
+            if r.status_code != 200:
+                continue
+
+            data = r.json()
+            question = data.get("question", {})
+            resolve_time = pd.to_datetime(row["resolve_time"], utc=True)
+            resolution = row["resolution"]
+
+            # Get prediction history
+            aggs = question.get("aggregations", {})
+            history = None
+            for key in ["recency_weighted", "unweighted"]:
+                h = aggs.get(key, {}).get("history", [])
+                if h:
+                    history = h
+                    break
+
+            if not history:
+                continue
+
+            # For each horizon, find the prediction closest to N days before resolution
+            for days in [30, 7, 1]:
+                target_time = resolve_time - pd.Timedelta(days=days)
+                best_pred = None
+                best_diff = float("inf")
+
+                for entry in history:
+                    try:
+                        t = pd.Timestamp(entry["start_time"], unit="s", tz="UTC")
+                        centers = entry.get("centers", [])
+                        if not centers:
+                            continue
+                        diff = abs((t - target_time).total_seconds())
+                        if diff < best_diff:
+                            best_diff = diff
+                            best_pred = centers[0]
+                    except Exception:
+                        continue
+
+                if best_pred is not None:
+                    brier = (best_pred - resolution) ** 2
+                    horizons[days].append(brier)
+
+            time_module.sleep(0.3)
+
+            if (i + 1) % 20 == 0:
+                print(f"  Processed {i + 1}/200 questions...")
+
+        except Exception:
+            continue
+
+    print("\nResults:")
+    print(f"{'Horizon':<15} {'N':<8} {'Mean Brier':<15} {'ECE proxy'}")
+    print("-" * 45)
+    for days in [30, 7, 1]:
+        scores = horizons[days]
+        if scores:
+            print(f"{days} days before  {len(scores):<8} {np.mean(scores):<15.4f}")
+
+    return horizons
 if __name__ == "__main__":
     df = pd.read_csv("data/processed/questions_clean.csv")
     df["created_time"] = pd.to_datetime(df["created_time"], errors="coerce")
@@ -182,3 +268,4 @@ if __name__ == "__main__":
     extreme_results = analysis_extreme_probabilities(df)
     time_results = analysis_resolution_rate_over_time(df)
     confound_results = analysis_forecaster_confounds(df)
+    horizon_results = analysis_time_horizon(df)
