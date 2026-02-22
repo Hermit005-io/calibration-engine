@@ -14,10 +14,19 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* Main background */
-    .stApp { background-color: #0f1117; color: #ffffff; }
+    .stApp { background-color: #0f1117; }
     
     /* Sidebar */
     [data-testid="stSidebar"] { background-color: #1a1d27; }
+    [data-testid="stSidebar"] * { color: #ffffff !important; }
+    
+    /* All text white */
+    .stApp p, .stApp span, .stApp label, .stApp div { color: #e2e8f0; }
+    
+    /* Headers */
+    .stApp h1 { color: #7c9ef5 !important; }
+    .stApp h2 { color: #a0b4f7 !important; }
+    .stApp h3 { color: #c3d0fa !important; }
     
     /* Metric cards */
     [data-testid="stMetric"] {
@@ -26,19 +35,24 @@ st.markdown("""
         border-radius: 8px;
         padding: 16px;
     }
+    [data-testid="stMetricValue"] { color: #ffffff !important; }
+    [data-testid="stMetricLabel"] { color: #a0aec0 !important; }
     
-    /* Headers */
-    h1 { color: #7c9ef5 !important; }
-    h2 { color: #a0b4f7 !important; }
+    /* Radio buttons and selectbox */
+    .stRadio label { color: #e2e8f0 !important; }
+    .stSelectbox label { color: #e2e8f0 !important; }
     
-    /* Dataframes */
-    [data-testid="stDataFrame"] { border-radius: 8px; }
-    
-    /* Subtle divider */
+    /* Input fields */
+    .stTextInput input { 
+        background-color: #1a1d27 !important; 
+        color: #ffffff !important;
+        border-color: #2d3748 !important;
+    }
+
+    /* Divider */
     hr { border-color: #2d3748; }
 </style>
 """, unsafe_allow_html=True)
-@st.cache_data
 def load_data():
     df = pd.read_csv("data/processed/questions_clean.csv")
     bins = pd.read_csv("data/processed/bins.csv")
