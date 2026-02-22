@@ -145,9 +145,13 @@ elif page == "Forecaster Analysis":
     col2.metric(f"High Forecasters (>{median:.0f})", f"ECE: {compute_ece(high):.4f}", delta=f"Brier: {high['brier'].mean():.4f}")
 
     st.markdown("""
-    **Key Finding:** Questions with more forecasters have a *lower Brier Score* (more accurate) 
-    but *higher ECE* (less calibrated). More participation improves accuracy but introduces overconfidence.
-    This is statistically significant (p < 0.0001).
+    **Key Finding:** Questions with more forecasters are both *more accurate* and *better 
+    calibrated* across every metric. Crucially, this effect holds within every question 
+    age group — controlling for how old a question is doesn't explain it away. 
+    More participation genuinely improves forecast quality (p < 0.0001, n=4,851).
+    
+    **Correlation between forecaster count and Brier Score: -0.146**  
+    More forecasters → lower error, consistently.
     """)
 
     # Scatter: forecaster count vs brier score
